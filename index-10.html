@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xil.AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0f1e, #1a1a2e);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(20, 20, 25, 0.95);
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8b9dff;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #e0e0e0;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #8b9dff;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: #8b9dff;
+            color: #0f0f1e;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: #1e1e30;
+            padding: 30px;
+            border: 1px solid #2a2a45;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #8b9dff;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .card p {
+            line-height: 1.6;
+            color: #b0b0c0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 32px; }
+            nav ul { gap: 12px; font-size: 14px; }
+            .logo { font-size: 20px; }
+        }
+
+        /* 🕐 HORLOGE */
+        #horloge {
+            position: fixed;
+            top: 7px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 600px) {
+            #horloge {
+                font-size: 13px;
+                padding: 6px 12px;
+                top: 12px;
+                right: 12px;
+            }
+        }
+
+        /* 🤖 CHATBOT */
+        #chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #8b9dff;
+            color: #0f0f1e;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            transition: transform 0.3s;
+        }
+
+        #chat-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* 👥 CHAT PRIVÉ */
+        #priv-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 90px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #8b9dff;
+            color: #0f0f1e;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            transition: transform 0.3s;
+        }
+
+        #priv-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        body.chat-open #priv-toggle,
+        body.priv-open #priv-toggle,
+        body.priv-open #chat-toggle {
+            display: none;
+        }
+
+        #priv-window {
+            position: fixed;
+            inset: 0;
+            background: #1e1e30;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9998;
+        }
+
+        #priv-window.open {
+            display: flex;
+        }
+
+        #priv-header {
+            background: #8b9dff;
+            color: #0f0f1e;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        #priv-header button {
+            background: none;
+            border: none;
+            color: #0f0f1e;
+            font-size: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 5px 10px;
+        }
+
+        #priv-messages {
+            flex: 1;
+            min-height: 0;
+            padding: 20px;
+            overflow-y: auto;
+            background: #14142a;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #priv-input-area {
+            display: flex;
+            padding: 15px;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            background: #1e1e30;
+            border-top: 1px solid #2a2a45;
+            flex-shrink: 0;
+        }
+
+        #priv-input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 18px;
+            border: 1px solid #2a2a45;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            background: #14142a;
+            color: #e0e0e0;
+        }
+
+        #priv-input-area button {
+            background: #8b9dff;
+            color: #0f0f1e;
+            border: none;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #priv-code-box {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 30px 24px;
+            background: #14142a;
+            text-align: center;
+        }
+
+        #priv-code-box h2 { color: #8b9dff; }
+        #priv-code-box p { color: #a0a0b0; font-size: 14px; max-width: 320px; }
+
+        #priv-code {
+            width: 100%;
+            max-width: 320px;
+            padding: 14px 16px;
+            background: #1e1e30;
+            border: 2px solid #2a2a45;
+            border-radius: 12px;
+            color: #e0e0e0;
+            font-size: 16px;
+            outline: none;
+        }
+
+        #priv-code:focus { border-color: #8b9dff; }
+
+        #priv-code-btn {
+            width: 100%;
+            max-width: 320px;
+            padding: 14px;
+            background: #8b9dff;
+            color: #0f0f1e;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #priv-code-erreur { color: #ff6b6b; font-size: 14px; min-height: 18px; }
+
+        #priv-window.sans-salon #priv-messages,
+        #priv-window.sans-salon #priv-input-area {
+            display: none;
+        }
+
+        #priv-window.sans-salon #priv-code-box {
+            display: flex;
+        }
+
+        #priv-typing {
+            min-height: 24px;
+            padding: 0 20px 8px;
+            background: #14142a;
+            color: #a0a0b0;
+            font-size: 13px;
+            font-style: italic;
+            flex-shrink: 0;
+        }
+
+        #priv-typing .points span { animation: priv-point 1.4s infinite both; }
+        #priv-typing .points span:nth-child(2) { animation-delay: 0.2s; }
+        #priv-typing .points span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes priv-point {
+            0%, 80%, 100% { opacity: 0.2; }
+            40% { opacity: 1; }
+        }
+
+        #priv-window.sans-salon #priv-typing { display: none; }
+
+        .auteur { font-size: 12px; font-weight: bold; color: #8b9dff; margin-bottom: 3px; }
+        .heure { font-size: 11px; opacity: 0.6; margin-top: 4px; text-align: right; }
+
+        /* Le bouton 💬 disparaît quand le chat est ouvert (il cachait le bouton d'envoi) */
+        body.chat-open #chat-toggle {
+            display: none;
+        }
+
+        #chat-window {
+            position: fixed;
+            inset: 0;
+            background: #1e1e30;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9998;
+        }
+
+        #chat-window.open {
+            display: flex;
+        }
+
+        #chat-header {
+            background: #8b9dff;
+            color: #0f0f1e;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        #chat-header button {
+            background: none;
+            border: none;
+            color: #0f0f1e;
+            font-size: 22px;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 5px 10px;
+        }
+
+        #chat-messages {
+            flex: 1;
+            min-height: 0;
+            padding: 20px;
+            overflow-y: auto;
+            background: #14142a;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 75%;
+            word-wrap: break-word;
+            font-size: 15px;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .msg.bot {
+            background: #2a2a45;
+            color: #e0e0e0;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg.user {
+            background: #8b9dff;
+            color: #0f0f1e;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        #chat-input-area {
+            display: flex;
+            padding: 15px;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            background: #1e1e30;
+            border-top: 1px solid #2a2a45;
+            flex-shrink: 0;
+        }
+
+        #chat-input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 18px;
+            border: 1px solid #2a2a45;
+            border-radius: 25px;
+            outline: none;
+            font-size: 15px;
+            background: #14142a;
+            color: #e0e0e0;
+        }
+
+        #chat-input-area button {
+            background: #8b9dff;
+            color: #0f0f1e;
+            border: none;
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* 🔐 ÉCRAN DE CONNEXION */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #0f0f1e, #1a1a2e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            padding: 20px;
+        }
+
+        #login-box {
+            background: #1e1e30;
+            border: 1px solid #2a2a45;
+            padding: 40px 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            color: #e0e0e0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        #login-box h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #8b9dff;
+        }
+
+        #login-box p {
+            margin-bottom: 25px;
+            color: #a0a0b0;
+            font-size: 15px;
+        }
+
+        #pseudo-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #14142a;
+            border: 2px solid #2a2a45;
+            border-radius: 12px;
+            color: #e0e0e0;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 15px;
+        }
+
+        #pseudo-input:focus {
+            border-color: #8b9dff;
+        }
+
+        #login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #8b9dff;
+            color: #0f0f1e;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        #login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 157, 255, 0.4);
+        }
+
+        #login-error {
+            color: #ff6b6b;
+            margin-top: 10px;
+            font-size: 14px;
+            min-height: 18px;
+        }
+
+        /* 🌙 ÉCRAN CACHÉ APRÈS CONNEXION */
+        #login-screen.hidden {
+            display: none;
+        }
+
+        /* 👤 BADGE UTILISATEUR */
+        #user-badge {
+            position: fixed;
+            top: 34px;
+            left: 20px;
+            background: rgba(30, 30, 48, 0.95);
+            color: #8b9dff;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            border: 1px solid #2a2a45;
+            transition: transform 0.2s;
+        }
+
+        #user-badge:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            #user-badge {
+                top: 31px;
+                left: 12px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ====== 🔐 ÉCRAN DE CONNEXION ====== -->
+<div id="login-screen">
+    <div id="login-box">
+        <h1>👋 Bienvenue</h1>
+        <p>Crée ton compte pour accéder au site</p>
+        <input type="text" id="pseudo-input" placeholder="Choisis ton pseudo..." maxlength="20">
+        <button id="login-btn" onclick="creerCompte()">Créer mon compte 🚀</button>
+        <p id="login-error"></p>
+    </div>
+</div>
+
+<!-- 🕐 HORLOGE FIXE -->
+<div id="horloge">🕐 --:--:--</div>
+
+<!-- EN-TÊTE -->
+<header>
+    <nav>
+        <div class="logo">Xil.AI</div>
+        <ul>
+            <li><a href="#accueil">Accueil</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- SECTION ACCUEIL -->
+<section class="hero" id="accueil">
+    <h1>Bienvenue sur Xil.AI 👋</h1>
+    <p>Créé facilement avec Acode sur mon téléphone</p>
+    <a href="#services" class="btn">Découvrir</a>
+</section>
+
+<!-- SECTION SERVICES -->
+<div class="container" id="services">
+    <div class="cards">
+        <div class="card">
+            <h3>🚀 Rapide</h3>
+            <p>Un site léger et rapide qui s'affiche instantanément sur tous les appareils.</p>
+        </div>
+        <div class="card">
+            <h3>🎨 Moderne</h3>
+            <p>Design élégant avec dégradés et animations fluides pour un rendu professionnel.</p>
+        </div>
+        <div class="card">
+            <h3>📱 Responsive</h3>
+            <p>S'adapte parfaitement aux téléphones, tablettes et ordinateurs.</p>
+        </div>
+        <div class="card">
+            <h3>🤖 Chatbot IA</h3>
+            <p>Pose des questions au chatbot en bas à droite ! Il peut blaguer, donner l'heure, et plus.</p>
+        </div>
+    </div>
+</div>
+
+<!-- PIED DE PAGE -->
+<footer id="contact">
+    <p>© 2026 Xil.AI - Fait avec ❤️ sur Acode</p>
+</footer>
+
+<!-- 🤖 CHATBOT -->
+<button id="chat-toggle" onclick="toggleChat()">💬</button>
+
+<div id="chat-window">
+    <div id="chat-header">
+        <span>🤖 Xil.IA</span>
+        <button onclick="toggleChat()">✖</button>
+    </div>
+
+    <div id="chat-messages">
+        <div class="msg bot" id="welcome-msg">Bonjour ! Je suis Xil.IA 🤖 Pose-moi une question 😊<br><br>💡 Tape <b>Aide</b> si tu veux voir mes fonctionnalités !</div>
+    </div>
+
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Écris ton message...">
+        <button onclick="sendMessage()">➤</button>
+    </div>
+</div>
+
+<!-- 👥 CHAT PRIVÉ -->
+<button id="priv-toggle" onclick="togglePriv()" title="Chat privé">👥</button>
+
+<div id="priv-window" class="sans-salon">
+    <div id="priv-header">
+        <span>🔒 Chat privé</span>
+        <span>
+            <button onclick="privChangerCode()" title="Changer de code">🔑</button>
+            <button onclick="togglePriv()" title="Fermer">✖</button>
+        </span>
+    </div>
+
+    <div id="priv-code-box">
+        <h2>🔒 Salon privé</h2>
+        <p>Toi et ton pote, entrez le même code secret pour vous retrouver.</p>
+        <input type="text" id="priv-code" placeholder="Code secret (ex: tigre2026)" maxlength="30"
+               autocapitalize="none" autocomplete="off">
+        <button id="priv-code-btn" onclick="privValiderCode()">Entrer 🚀</button>
+        <p id="priv-code-erreur"></p>
+    </div>
+
+    <div id="priv-messages"></div>
+    <div id="priv-typing"></div>
+
+    <div id="priv-input-area">
+        <input type="text" id="priv-input" placeholder="Écris ton message..." maxlength="500" autocomplete="off">
+        <button onclick="privEnvoyer()">➤</button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<!-- JAVASCRIPT -->
+<script>
+// ===== 0. 🔐 COMPTE UTILISATEUR =====
+function majBienvenue() {
+    var pseudo = localStorage.getItem('xil_pseudo');
+    var wm = document.getElementById('welcome-msg');
+    if (!pseudo || !wm) return;
+    wm.innerHTML = 'Salut <b></b> ! Je suis Xil.IA 🤖<br><br>💡 Tape <b>Aide</b> pour voir mes fonctionnalités !';
+    wm.querySelector('b').textContent = pseudo;
+}
+
+function verifierConnexion() {
+    var pseudo = localStorage.getItem('xil_pseudo');
+    if (pseudo) {
+        document.getElementById('login-screen').classList.add('hidden');
+        afficherBadge(pseudo);
+        majBienvenue();
+    }
+}
+
+function creerCompte() {
+    var input = document.getElementById('pseudo-input');
+    var pseudo = input.value.trim();
+    var error = document.getElementById('login-error');
+
+    if (pseudo.length < 2) {
+        error.textContent = "❌ Pseudo trop court (minimum 2 caractères)";
+        return;
+    }
+
+    if (pseudo.length > 20) {
+        error.textContent = "❌ Pseudo trop long (maximum 20 caractères)";
+        return;
+    }
+
+    localStorage.setItem('xil_pseudo', pseudo);
+    document.getElementById('login-screen').classList.add('hidden');
+    afficherBadge(pseudo);
+    majBienvenue();
+}
+
+function afficherBadge(pseudo) {
+    var badge = document.createElement('div');
+    badge.id = 'user-badge';
+    badge.textContent = '👤 ' + pseudo;
+    badge.title = 'Clique pour te déconnecter';
+    badge.onclick = deconnecter;
+    document.body.appendChild(badge);
+}
+
+function deconnecter() {
+    if (!confirm('Voulez-vous vraiment vous déconnecter ?')) return;
+    localStorage.removeItem('xil_pseudo');
+    location.reload();
+}
+
+verifierConnexion();
+
+document.getElementById('pseudo-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') creerCompte();
+});
+
+// ===== 1. MENU - Défilement fluide =====
+document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.querySelector(link.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+});
+
+// ===== 2. 🕐 HORLOGE =====
+function actualiserHorloge() {
+    var d = new Date();
+    var h = String(d.getHours()).padStart(2, '0');
+    var m = String(d.getMinutes()).padStart(2, '0');
+    var s = String(d.getSeconds()).padStart(2, '0');
+    document.getElementById('horloge').textContent = "🕐 " + h + ":" + m + ":" + s;
+}
+actualiserHorloge();
+setInterval(actualiserHorloge, 1000);
+
+// ===== 3. 🤖 CHATBOT =====
+function toggleChat() {
+    var ouvert = document.getElementById('chat-window').classList.toggle('open');
+    document.body.classList.toggle('chat-open', ouvert);
+}
+
+function addMessage(text, sender) {
+    var messages = document.getElementById('chat-messages');
+    var div = document.createElement('div');
+    div.className = 'msg ' + sender;
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+}
+
+function sendMessage() {
+    var input = document.getElementById('chat-input');
+    var text = input.value.trim();
+    if (!text) return;
+    addMessage(text, 'user');
+    input.value = '';
+    var loading = addMessage('...', 'bot');
+    setTimeout(function() {
+        loading.textContent = reponseDemo(text);
+        var messages = document.getElementById('chat-messages');
+        messages.scrollTop = messages.scrollHeight;
+    }, 500);
+}
+
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sendMessage();
+});
+
+// ===== 👥 CHAT PRIVÉ (Firebase) =====
+// 🔧 COLLE ICI TA CONFIG FIREBASE
+var firebaseConfig = {
+    apiKey: "AIzaSyDGSIeVgn-d3XG-PJc-_R-Td1wrCudzyNw",
+    authDomain: "xil-ai2-0.firebaseapp.com",
+    databaseURL: "https://xil-ai2-0-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "xil-ai2-0",
+    storageBucket: "xil-ai2-0.firebasestorage.app",
+    messagingSenderId: "578371136736",
+    appId: "1:578371136736:web:89bdde87acc2174f473485"
+};
+
+function byId(id) { return document.getElementById(id); }
+
+var monId = localStorage.getItem('chat_uid');
+if (!monId) {
+    monId = 'u' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    localStorage.setItem('chat_uid', monId);
+}
+
+var privDb = null;
+var privRef = null;
+
+if (typeof firebase !== 'undefined' && firebaseConfig.databaseURL) {
+    firebase.initializeApp(firebaseConfig);
+    privDb = firebase.database();
+}
+
+var privSalon = '';
+var privTypingRef = null;
+var privTypingTimer = null;
+var privDernierSignal = 0;
+
+function privMoiSaisie() {
+    return privDb.ref('salons/' + privSalon + '/typing/' + monId);
+}
+
+// Je tape : je préviens les autres (au maximum toutes les 2 secondes)
+function privSignalerSaisie() {
+    if (!privDb || !privRef || !privSalon) return;
+    var maintenant = Date.now();
+    if (maintenant - privDernierSignal > 2000) {
+        privDernierSignal = maintenant;
+        var r = privMoiSaisie();
+        r.set({ auteur: localStorage.getItem('xil_pseudo') || 'Anonyme' });
+        r.onDisconnect().remove();
+    }
+    clearTimeout(privTypingTimer);
+    privTypingTimer = setTimeout(privArreterSaisie, 3000);
+}
+
+// J'arrête de taper (ou j'envoie / je ferme) : je le signale
+function privArreterSaisie() {
+    clearTimeout(privTypingTimer);
+    privDernierSignal = 0;
+    if (privDb && privSalon) privMoiSaisie().remove();
+}
+
+// Un autre tape : j'affiche « ... est en train d'écrire »
+function privAfficherSaisie(data) {
+    var zone = byId('priv-typing');
+    zone.textContent = '';
+    var noms = [];
+    data = data || {};
+    for (var k in data) {
+        if (k !== monId && data[k] && data[k].auteur) noms.push(String(data[k].auteur));
+    }
+    if (!noms.length) return;
+
+    var texte;
+    if (noms.length === 1) texte = noms[0] + " est en train d'écrire";
+    else if (noms.length === 2) texte = noms[0] + ' et ' + noms[1] + " sont en train d'écrire";
+    else texte = 'Plusieurs personnes écrivent';
+
+    zone.appendChild(document.createTextNode(texte));
+    var pts = document.createElement('span');
+    pts.className = 'points';
+    pts.innerHTML = '<span>.</span><span>.</span><span>.</span>';
+    zone.appendChild(pts);
+}
+
+function privErreur(texte) {
+    byId('priv-code-erreur').textContent = texte;
+}
+
+function togglePriv() {
+    var ouvert = byId('priv-window').classList.toggle('open');
+    document.body.classList.toggle('priv-open', ouvert);
+    if (!ouvert) { privArreterSaisie(); return; }
+
+    if (!privDb) {
+        privErreur("⚠️ Firebase n'est pas configuré (ou pas de connexion). Colle ta config dans le code.");
+        return;
+    }
+    var salon = localStorage.getItem('chat_salon');
+    if (salon && !privRef) privDemarrer(salon);
+}
+
+function privValiderCode() {
+    if (!privDb) {
+        privErreur("⚠️ Firebase n'est pas configuré (ou pas de connexion).");
+        return;
+    }
+    var s = byId('priv-code').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (s.length < 4) {
+        privErreur("❌ Code trop court (min 4 lettres ou chiffres)");
+        return;
+    }
+    localStorage.setItem('chat_salon', s);
+    privErreur('');
+    privDemarrer(s);
+}
+
+function privDemarrer(salon) {
+    privArreterSaisie();
+    if (privRef) privRef.off();
+    if (privTypingRef) privTypingRef.off();
+    privSalon = salon;
+    byId('priv-typing').textContent = '';
+    byId('priv-window').classList.remove('sans-salon');
+    byId('priv-messages').innerHTML = '';
+
+    privRef = privDb.ref('salons/' + salon + '/messages');
+    privRef.limitToLast(100).on('child_added', function (snap) {
+        privAfficher(snap.val());
+    });
+
+    privTypingRef = privDb.ref('salons/' + salon + '/typing');
+    privTypingRef.on('value', function (snap) {
+        privAfficherSaisie(snap.val());
+    });
+}
+
+function privChangerCode() {
+    privArreterSaisie();
+    if (privTypingRef) { privTypingRef.off(); privTypingRef = null; }
+    privSalon = '';
+    byId('priv-typing').textContent = '';
+    if (privRef) { privRef.off(); privRef = null; }
+    localStorage.removeItem('chat_salon');
+    byId('priv-code').value = '';
+    byId('priv-window').classList.add('sans-salon');
+}
+
+function privAfficher(m) {
+    if (!m || typeof m.texte !== 'string') return;
+
+    var div = document.createElement('div');
+    div.className = 'msg ' + (m.uid === monId ? 'user' : 'bot');
+
+    if (m.uid !== monId) {
+        var a = document.createElement('div');
+        a.className = 'auteur';
+        a.textContent = m.auteur || '???';
+        div.appendChild(a);
+    }
+
+    var t = document.createElement('div');
+    t.textContent = m.texte;
+    div.appendChild(t);
+
+    var h = document.createElement('div');
+    h.className = 'heure';
+    var d = new Date(m.ts || Date.now());
+    h.textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    div.appendChild(h);
+
+    var box = byId('priv-messages');
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function privEnvoyer() {
+    var input = byId('priv-input');
+    var texte = input.value.trim();
+    if (!texte || !privRef) return;
+
+    privRef.push({
+        auteur: localStorage.getItem('xil_pseudo') || 'Anonyme',
+        uid: monId,
+        texte: texte,
+        ts: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    input.value = '';
+    input.focus();
+    privArreterSaisie();
+}
+
+byId('priv-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') privEnvoyer();
+});
+byId('priv-input').addEventListener('input', privSignalerSaisie);
+byId('priv-code').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') privValiderCode();
+});
+
+// ===== 🔎 Détection de mots entiers (gère les accents : é, à, ç...) =====
+function has(q, motifs) {
+    return new RegExp('(^|[^a-zà-ÿ0-9])(?:' + motifs + ')(?![a-zà-ÿ0-9])').test(q);
+}
+
+// ===== 🧮 CALCULATRICE SCIENTIFIQUE =====
+var RAD = Math.PI / 180;
+
+function fact(n) {
+    if (n < 0 || n !== Math.floor(n) || n > 170) return NaN;
+    var r = 1;
+    for (var i = 2; i <= n; i++) r *= i;
+    return r;
+}
+
+// Fonctions autorisées (sin, cos, tan en DEGRÉS : sin(30) = 0.5)
+var FONCTIONS = {
+    sqrt: Math.sqrt,
+    sin: function(x) { return Math.sin(x * RAD); },
+    cos: function(x) { return Math.cos(x * RAD); },
+    tan: function(x) { return Math.tan(x * RAD); },
+    log: Math.log10,
+    ln: Math.log,
+    abs: Math.abs,
+    fact: fact
+};
+
+function calculer(texte) {
+    var e = texte.toLowerCase()
+        .replace(/combien\s*(?:fait|font|vaut)|calcule(?:-moi)?|calculs?|[=?]/g, ' ')
+        .replace(/,/g, '.')
+        .replace(/÷/g, '/')
+        .replace(/×/g, '*')
+        .replace(/(\d)\s*x\s*(\d)/g, '$1*$2')
+        .replace(/\bpi\b/g, '(' + Math.PI + ')')
+        .replace(/\be\b/g, '(' + Math.E + ')')
+        .replace(/√\s*(\d+\.?\d*)/g, 'sqrt($1)')
+        .replace(/\bracine\s*(?:carrée\s*)?(?:de\s*)?(\d+\.?\d*)/g, 'sqrt($1)')
+        .replace(/\bfactorielle\s*(?:de\s*)?(\d+)/g, 'fact($1)')
+        .replace(/(\d+)\s*!/g, 'fact($1)')
+        .replace(/\bsinus\b/g, 'sin')
+        .replace(/\bcosinus\b/g, 'cos')
+        .replace(/\btangente\b/g, 'tan')
+        .replace(/\blogarithme\s*népérien/g, 'ln')
+        .replace(/\blogarithme(?:\s*décimal)?/g, 'log')
+        .replace(/\blog10\b/g, 'log')
+        .replace(/\babsolu\b/g, 'abs')
+        .replace(/\b(sin|cos|tan|log|ln|abs)\s+(\d+\.?\d*)/g, '$1($2)')
+        .replace(/\b(?:puissance|exposant)\b|\^/g, '**')
+        .replace(/\bmodulo\b|\bmod\b/g, '%')
+        .replace(/\bfois\b/g, '*')
+        .replace(/\bplus\b/g, '+')
+        .replace(/\bmoins\b/g, '-')
+        .replace(/\bdivisé\s*par|\bdivisé/g, '/')
+        .replace(/(?:\bau\s*)?\bcarré/g, '**2')
+        .replace(/(?:\bau\s*)?\bcube\b/g, '**3')
+        .replace(/\s+/g, '');
+
+    // Sécurité : uniquement chiffres, opérateurs et fonctions connues
+    if (!/^[a-z0-9+\-*\/%.()]+$/.test(e)) return null;
+    var ids = e.match(/[a-z]+/g) || [];
+    for (var i = 0; i < ids.length; i++) {
+        if (!FONCTIONS.hasOwnProperty(ids[i])) return null;
+    }
+
+    try {
+        var noms = Object.keys(FONCTIONS);
+        var valeurs = noms.map(function(n) { return FONCTIONS[n]; });
+        var fn = Function.apply(null, noms.concat('"use strict"; return (' + e + ');'));
+        var r = fn.apply(null, valeurs);
+        if (typeof r === 'number' && isFinite(r)) {
+            if (Math.abs(r) < 1e15) r = Math.round(r * 1e10) / 1e10;
+            return r;
+        }
+    } catch (err) {
+        return null;
+    }
+    return null;
+}
+
+function estCalcul(q) {
+    if (!/\d/.test(q)) return false;
+    // Expression 100% mathématique : "2+2", "(3+5)*2", "5!"
+    if (/^[\d\s+\-*\/().%^√x×÷,!]+$/.test(q)) return /[+\-*\/%^√x×÷!]/.test(q);
+    // Chiffre opérateur chiffre : "combien fait 2+2"
+    if (/\d\s*[+\-*\/^x×÷]\s*\d/.test(q)) return true;
+    // Mots-clés mathématiques + un chiffre
+    return has(q, 'racine|sqrt|puissance|exposant|fois|plus|moins|divisé|modulo|mod|carré|cube|sin|cos|tan|sinus|cosinus|tangente|log|ln|logarithme|factorielle|abs|absolu|calcule|combien');
+}
+
+// ===== 🤖 RÉPONSES =====
+function reponseDemo(question) {
+    var q = question.toLowerCase().trim();
+    var now = new Date();
+    var heure = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    var date = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    // --- Aide ---
+    if (q === 'aide' || q === 'help' || has(q, 'fonctionnalités?|que sais-tu|que peux-tu')) {
+        return "🤖 Voici ce que je sais faire :\n\n" +
+               "👋 Salutations → dis 'bonjour'\n" +
+               "🕐 Heure → 'quelle heure'\n" +
+               "📅 Date → 'quel jour'\n" +
+               "💻 Code → 'html', 'css', 'javascript', 'python'\n" +
+               "🌍 Capitales → 'capitale de la France'\n" +
+               "🧮 Calculs → '2+2', '(3+5)*2', 'racine de 16', '20% de 50', 'sin(30)', 'log(100)', '5!', '2 puissance 10'\n" +
+               "🎵 Loisirs → 'musique', 'film', 'sport'\n" +
+               "💙 Humeur → 'je suis triste', 'je suis content'\n" +
+               "😂 Blagues → 'raconte-moi une blague'\n" +
+               "🎲 Hasard → 'lance un dé', 'pile ou face'\n\n" +
+               "💬 Pose-moi ce que tu veux !";
+    }
+
+    // --- Pourcentage : "20% de 50" ---
+    var qd = q.replace(/(\d),(\d)/g, '$1.$2');
+    var pourcentMatch = qd.match(/(\d+\.?\d*)\s*(?:%|pour\s*cent|pourcent)\s*de\s*(\d+\.?\d*)/);
+    if (pourcentMatch) {
+        var p = parseFloat(pourcentMatch[1]);
+        var n = parseFloat(pourcentMatch[2]);
+        return "🧮 " + p + "% de " + n + " = " + Math.round(p * n / 100 * 1e10) / 1e10;
+    }
+
+    // --- Factorielle trop grande ---
+    var factMatch = q.match(/factorielle\s*(?:de\s*)?(\d+)|(\d+)\s*!/);
+    if (factMatch) {
+        var f = parseInt(factMatch[1] || factMatch[2], 10);
+        if (f > 170) return "❌ Nombre trop grand (max 170) !";
+    }
+
+    // --- Calculs ---
+    if (estCalcul(q)) {
+        var res = calculer(q);
+        if (res !== null) {
+            return "🧮 " + question.trim() + " = " + res;
+        }
+    }
+
+    // --- Conversation ---
+    if (has(q, 'bonjour|salut|hello|bonsoir|coucou|hey')) return "Bonjour ! 👋 Comment puis-je t'aider ?";
+    if (has(q, 'ça va|comment vas|comment tu vas')) return "Je vais super bien, merci ! 😄 Et toi ?";
+    if (has(q, 'qui es|ton nom|tu es qui|présente')) return "Je suis Xil.IA... Ton IA personnelle 🤖 Créée par Lyam !";
+    if (has(q, 'merci|thanks')) return "Avec grand plaisir ! 😊";
+    if (has(q, 'au revoir|bye|à plus|bonne nuit')) return "À bientôt ! 👋";
+
+    // --- Humeur (avant l'heure, pour que "heureux" ne déclenche rien d'autre) ---
+    if (has(q, 'triste|déprimé|pas bien|fatigué')) return "💙 Prends soin de toi, ça ira mieux !";
+    if (has(q, 'content|heureux|joyeux|super')) return "😄 Génial ! Content pour toi !";
+    if (has(q, 'peur|angoissé|stressé')) return "🌱 Respire profondément, tout va bien se passer !";
+
+    // --- Heure & date ---
+    if (has(q, 'heures?|il est quel')) return "🕐 Il est actuellement " + heure;
+    if (has(q, 'date|quel jour|on est quel')) return "📅 Nous sommes le " + date;
+
+    // --- Code ---
+    if (has(q, 'html')) return "💻 HTML = le squelette d'une page web !";
+    if (has(q, 'css')) return "🎨 CSS sert à styliser ton HTML : couleurs, polices, marges...";
+    if (has(q, 'javascript|js')) return "⚡ JavaScript rend tes pages interactives !";
+    if (has(q, 'python')) return "🐍 Python = langage idéal pour débuter.";
+    if (has(q, 'code|coder|programmer|programmation')) return "💡 Astuce : commence petit, teste souvent !";
+
+    // --- Capitales ---
+    if (has(q, 'capitale.*france|paris')) return "🗼 La capitale de la France est Paris !";
+    if (has(q, 'capitale.*madagascar|antananarivo')) return "🇲🇬 La capitale de Madagascar est Antananarivo !";
+
+    // --- Loisirs ---
+    if (has(q, 'musique|chanson')) return "🎵 Quel est ton style préféré ?";
+    if (has(q, 'film|cinéma|série')) return "🎬 Quel est ton film préféré ?";
+    if (has(q, 'sport|foot|basket')) return "⚽ Tu pratiques un sport ?";
+
+    // --- Xil ---
+    if (has(q, 'xil')) return "Oui c'est moi, Xil.IA ! 🤖 Comment puis-je t'aider ?";
+
+    // --- Blagues ---
+    if (has(q, 'blagues?|drôle|rire')) {
+        var blagues = [
+            "Pourquoi les plongeurs plongent-ils en arrière ? Sinon ils tombent dans le bateau ! 😂",
+            "Que dit une imprimante qui a froid ? Brrrrrr... 🖨️",
+            "Pourquoi les poissons n'aiment pas le tennis ? Ils ont peur du filet ! 🐟",
+            "Qu'est-ce qu'un canif ? Un petit fien ! 🐶"
+        ];
+        return blagues[Math.floor(Math.random() * blagues.length)];
+    }
+
+    // --- Hasard ---
+    if (has(q, 'pile ou face')) return "🪙 " + (Math.random() < 0.5 ? "PILE !" : "FACE !");
+    if (has(q, 'dés?|hasard')) return "🎲 Tu as fait un " + (Math.floor(Math.random() * 6) + 1) + " !";
+
+    if (q.endsWith("?")) return "🤔 En mode démo, essaie : 'une blague', 'l'heure', ou 'le code' !";
+
+    var defaults = [
+        "😊 Intéressant ! Parle-moi encore de ça.",
+        "🤔 Je vois... Et toi, qu'en penses-tu ?",
+        "💭 Dis-m'en plus !",
+        "👍 Ok ! Autre chose ?",
+        "✨ Continue, je t'écoute !",
+        "🎯 Demande-moi : 'une blague', 'l'heure', ou 'le code' !"
+    ];
+    return defaults[Math.floor(Math.random() * defaults.length)];
+}
+</script>
+
+</body>
+</html>
